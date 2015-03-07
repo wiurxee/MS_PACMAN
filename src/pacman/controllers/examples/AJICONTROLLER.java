@@ -2,7 +2,9 @@ package pacman.controllers.examples;
 
 import java.util.Random;
 
-import maquina.estado.AjiMaquinaEstado;
+import maquina.estado.State_Defensive;
+import maquina.estado.State_Passive;
+import maquina.estado.SuperMachine;
 import pacman.controllers.Controller;
 import pacman.game.Game;
 import pacman.game.Constants.MOVE;
@@ -11,13 +13,16 @@ public final class AJICONTROLLER extends Controller<MOVE>{
 	
 	private MOVE[] allMoves=MOVE.values();
 	
-	private AjiMaquinaEstado currentState;
+	public static Game game;
+	
+	private SuperMachine currentState = new State_Passive();
 	/* (non-Javadoc)
 	 * @see pacman.controllers.Controller#getMove(pacman.game.Game, long)
 	 */
 	public MOVE getMove(Game game,long timeDue)
 	{
-		currentState = currentState.next();
+		this.game = game;
+		//currentState = currentState.next();
 		return currentState.action();
 	}
 	

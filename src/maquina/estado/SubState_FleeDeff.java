@@ -1,13 +1,15 @@
 package maquina.estado;
 
+import pacman.game.Constants.DM;
 import pacman.game.Constants.MOVE;
+import pacman.game.Game;
 
-public final class SubState_FleeDeff  extends State_Defensive{
+public final class SubState_FleeDeff  extends SubMachine_Deffensive{
 
-	public AjiMaquinaEstado next() {
-		return super.next();
+	public SubMachine_Deffensive next(Game game) {
+		return super.next(game);
 	}
 	public MOVE action() {
-		return null;
+		return game.getNextMoveAwayFromTarget(game.getPacmanCurrentNodeIndex(), closestIndex, DM.PATH);
 	}
 }

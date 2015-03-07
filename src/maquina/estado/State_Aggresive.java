@@ -2,13 +2,19 @@ package maquina.estado;
 
 import pacman.game.Constants.MOVE;
 
-public  class State_Aggresive extends AjiMaquinaEstado{
-
-	public AjiMaquinaEstado next() {
-		return null;
+public  class State_Aggresive extends SuperMachine
+{
+	SubMachine_Aggresive substate;
+	
+	public SuperMachine next() 
+	{
+		return super.next();
 	}
-	public MOVE action() {
-		return null;
+	
+	public MOVE action() 
+	{
+		substate.next();
+		return substate.action();
 	}
 
 }
