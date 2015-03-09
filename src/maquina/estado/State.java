@@ -1,22 +1,18 @@
 package maquina.estado;
 
 import pacman.game.Constants.MOVE;
-import pacman.game.Game;
 
-public abstract class SubMachine_Passive {
+public abstract class State {
 
-	protected Game game;
+	
 	/**
 	 *  This method will change the actual state depending on different values
 	 */
-	public SubMachine_Passive next(Game game)
-	{
-		this.game = game;
-		return new SubState_RecollectPass();
-	}
+	public abstract void next();
 	/**
 	 * This method will return the next move of Pacman
 	 * @return next MOVE of Pacman
 	 */
 	public abstract MOVE action();
+	public abstract void Final();
 }

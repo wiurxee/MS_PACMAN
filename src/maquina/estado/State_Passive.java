@@ -2,9 +2,8 @@ package maquina.estado;
 
 import pacman.game.Constants.MOVE;
 
-public class State_Passive extends SuperMachine 
+public class State_Passive extends State 
 {
-	SubMachine_Passive substate = new SubState_RecollectPass();
 	
 	public void next() 
 	{
@@ -12,8 +11,11 @@ public class State_Passive extends SuperMachine
 	
 	public MOVE action() 
 	{
-		return substate.action();
+		return MOVE.DOWN;
 	}
 
-
+	public void Final()
+	{
+		
+	}
 }

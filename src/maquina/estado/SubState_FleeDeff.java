@@ -4,12 +4,15 @@ import pacman.game.Constants.DM;
 import pacman.game.Constants.MOVE;
 import pacman.game.Game;
 
-public final class SubState_FleeDeff  extends SubMachine_Deffensive{
+public final class SubState_FleeDeff  extends State{
 
-	public SubMachine_Deffensive next(Game game) {
-		return super.next(game);
+	public void next() {
 	}
 	public MOVE action() {
-		return game.getNextMoveAwayFromTarget(game.getPacmanCurrentNodeIndex(), closestIndex, DM.PATH);
+		return MOVE.DOWN;
+	}
+	public void Final()
+	{
+		
 	}
 }

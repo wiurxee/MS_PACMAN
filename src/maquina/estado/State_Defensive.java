@@ -2,10 +2,8 @@ package maquina.estado;
 
 import pacman.game.Constants.MOVE;
 
-public class State_Defensive extends SuperMachine
+public class State_Defensive extends State
 {
-	public SubMachine_Deffensive substate;
-	
 	
 	public void next() 
 	{
@@ -13,7 +11,9 @@ public class State_Defensive extends SuperMachine
 
 	public MOVE action() 
 	{
-		return substate.action();
+		return MOVE.DOWN;
 	}
-
+	public void Final()
+	{
+	}
 }

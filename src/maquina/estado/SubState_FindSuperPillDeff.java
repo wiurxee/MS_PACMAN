@@ -4,14 +4,18 @@ import pacman.game.Constants.DM;
 import pacman.game.Constants.MOVE;
 import pacman.game.Game;
 
-public final class SubState_FindSuperPillDeff extends SubMachine_Deffensive{
+public final class SubState_FindSuperPillDeff extends State{
 
 	
-	public SubMachine_Deffensive next(Game game) {
-		return super.next(game);
+	public void next() 
+	{
 	}
-	public MOVE action() {
+	public MOVE action() 
+	{
+		return MOVE.DOWN;
+	}
+	public void Final()
+	{
 		
-		return game.getNextMoveTowardsTarget(game.getPacmanCurrentNodeIndex(), closestIndex, DM.PATH);
 	}
 }
