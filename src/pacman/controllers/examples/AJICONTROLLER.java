@@ -22,7 +22,7 @@ public final class AJICONTROLLER extends Controller<MOVE>{
 	public MOVE getMove(Game game,long timeDue)
 	{
 		this.game = game;
-		//currentState = currentState.next();
+		currentState.next();
 		return currentState.action();
 	}
 	

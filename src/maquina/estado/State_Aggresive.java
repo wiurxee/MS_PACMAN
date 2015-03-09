@@ -6,9 +6,8 @@ public  class State_Aggresive extends SuperMachine
 {
 	SubMachine_Aggresive substate;
 	
-	public SuperMachine next() 
+	public void next() 
 	{
-		return super.next();
 	}
 	
 	public MOVE action() 

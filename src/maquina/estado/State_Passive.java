@@ -6,14 +6,12 @@ public class State_Passive extends SuperMachine
 {
 	SubMachine_Passive substate = new SubState_RecollectPass();
 	
-	public SuperMachine next() 
+	public void next() 
 	{
-		return super.next();
 	}
 	
 	public MOVE action() 
 	{
-		substate = substate.next();
 		return substate.action();
 	}
 
