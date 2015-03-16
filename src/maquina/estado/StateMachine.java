@@ -31,9 +31,28 @@ public class StateMachine
 		this.states = estados;
 		this.subMachines = subMaq;
 		
-		for(StateMachine subMachine : this.subMachines)
+		for(State iState : this.states)
 		{
-			subMachine.setSuper(this);
+			for(StateMachine iStateMachine : this.subMachines)
+			{
+				iStateMachine.setSuper(this);
+				if(iState instanceof State_Aggresive)
+				{
+					State_Aggresive iStateAgg = (State_Aggresive) iState;
+					iStateAgg.setSubMachine(iStateMachine);
+				}
+				else if(iState instanceof State_Defensive)
+				{
+					State_Defensive iStateDeff = (State_Defensive) iState;
+					iStateDeff.setSubMachine(iStateMachine);
+				}
+				else if(iState instanceof State_Passive)
+				{
+					State_Passive iStatePas = (State_Passive) iState;
+					iStatePas.setSubMachine(iStateMachine);
+				}
+				
+			}
 		}
 	}
 	/**

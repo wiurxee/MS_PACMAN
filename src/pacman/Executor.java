@@ -37,6 +37,8 @@ import static pacman.game.Constants.*;
 @SuppressWarnings("unused")
 public class Executor
 {	
+	
+	
 	/**
 	 * The main method. Several options are listed - simply remove comments to use the option you want.
 	 *
@@ -46,11 +48,12 @@ public class Executor
 	{
 		Executor exec=new Executor();
 
-		/*
+		
 		//run multiple games in batch mode - good for testing.
-		int numTrials=10;
-		exec.runExperiment(new RandomPacMan(),new RandomGhosts(),numTrials);
-		 */
+		int numTrials=30;
+		exec.runExperiment(new AJICONTROLLER(),new StarterGhosts(),numTrials);
+		exec.replayGame("maxScoreReplay", true);
+		exec.replayGame("minScoreReplay", true);
 		
 		/*
 		//run a game in synchronous mode: game waits until controllers respond.
@@ -63,7 +66,7 @@ public class Executor
 		//run the game in asynchronous mode.
 		boolean visual=true;
 //		exec.runGameTimed(new NearestPillPacMan(),new AggressiveGhosts(),visual);
-		exec.runGameTimed(new AJICONTROLLER(),new StarterGhosts(),visual);
+		//exec.runGameTimed(new AJICONTROLLER(),new StarterGhosts(),visual);
 //		exec.runGameTimed(new HumanController(new KeyBoardInput()),new StarterGhosts(),visual);	
 		//*/
 		
@@ -97,25 +100,45 @@ public class Executor
     public void runExperiment(Controller<MOVE> pacManController,Controller<EnumMap<GHOST,MOVE>> ghostController,int trials)
     {
     	double avgScore=0;
+    	double maxScore=0;
+    	double minScore=9999999;
     	
     	Random rnd=new Random(0);
 		Game game;
 		
 		for(int i=0;i<trials;i++)
 		{
+			StringBuilder replay = new StringBuilder();
+			
+			
 			game=new Game(rnd.nextLong());
 			
 			while(!game.gameOver())
 			{
 		        game.advanceGame(pacManController.getMove(game.copy(),System.currentTimeMillis()+DELAY),
 		        		ghostController.getMove(game.copy(),System.currentTimeMillis()+DELAY));
+		        replay.append(game.getGameState() + "\n");
 			}
+			
+			if(game.getScore()>maxScore)
+			{
+				saveToFile(replay.toString(), "maxScoreReplay", false);
+				maxScore = game.getScore();
+			}
+			else if(game.getScore()<minScore)
+			{
+				saveToFile(replay.toString(), "minScoreReplay", false);
+				minScore = game.getScore();
+			}
+			
 			
 			avgScore+=game.getScore();
 			System.out.println(i+"\t"+game.getScore());
 		}
 		
 		System.out.println(avgScore/trials);
+		System.out.println("Max Score:" + maxScore);
+		System.out.println("Min Score" + minScore);
     }
 	
 	/**

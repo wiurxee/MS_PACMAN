@@ -4,6 +4,7 @@ import pacman.game.Constants.MOVE;
 
 public class State_Passive extends State 
 {
+	private StateMachine SubMachine;
 	
 	public void next() 
 	{
@@ -17,5 +18,10 @@ public class State_Passive extends State
 	public void Final()
 	{
 		
+	}
+	
+	public void setSubMachine(StateMachine sub)
+	{
+		this.SubMachine = sub;
 	}
 }

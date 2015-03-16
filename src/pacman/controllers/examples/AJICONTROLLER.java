@@ -17,22 +17,32 @@ public final class AJICONTROLLER extends Controller<MOVE>{
 	
 	
 	private StateMachine SuperMachine;
-	private StateMachine AggresiveMachine;
-	private StateMachine DeffensiveMachine;
-	private StateMachine PassiveMachine;
 	
 	
 	
 	public AJICONTROLLER()
 	{
-		ArrayList<State> estados = new ArrayList<State>();
-		
 		ArrayList<StateMachine> subMachines = new ArrayList<StateMachine>();
-		subMachines.add(new StateMachine(estados));
-		subMachines.add(new StateMachine(estados));
-		subMachines.add(new StateMachine(estados));
-		SuperMachine = new StateMachine(estados,subMachines);
 		
+		ArrayList<State> estadosAgg = new ArrayList<State>();
+		estadosAgg.add(new SubState_EatGhostAgg());
+		
+		ArrayList<State> estadosDef = new ArrayList<State>();
+		estadosDef.add(new SubState_FindSuperPillDeff());
+		estadosDef.add(new SubState_FleeDeff());
+		
+		ArrayList<State> estadosPas = new ArrayList<State>();
+		estadosPas.add(new SubState_RecollectPass());
+		
+		ArrayList<State> estadosSup= new ArrayList<State>();
+		estadosSup.add(new State_Aggresive());
+		estadosSup.add(new State_Defensive());
+		estadosSup.add(new State_Passive());
+		
+		subMachines.add(new StateMachine(estadosAgg));
+		subMachines.add(new StateMachine(estadosDef));
+		subMachines.add(new StateMachine(estadosPas));
+		SuperMachine = new StateMachine(estadosSup,subMachines);		
 		
 	}	
 	/* (non-Javadoc)
