@@ -7,7 +7,7 @@ import pacman.game.Game;
 import pacman.game.Constants.MOVE;
 
 public final class AJICONTROLLER extends Controller<MOVE>
-{	
+{
 	private MOVE[] allMoves = MOVE.values();
 	public static Game game;
 	public static AJICONTROLLER singleton;

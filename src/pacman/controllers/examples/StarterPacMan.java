@@ -16,6 +16,7 @@ import static pacman.game.Constants.*;
  * 2. Go after the nearest edible ghost
  * 3. Go to the nearest pill/power pill
  */
+
 public class StarterPacMan extends Controller<MOVE>
 {	
 	private static final int MIN_DISTANCE=20;	//if a ghost is this close, run away
@@ -32,7 +33,7 @@ public class StarterPacMan extends Controller<MOVE>
 		
 		//Strategy 2: find the nearest edible ghost and go after them 
 		int minDistance=Integer.MAX_VALUE;
-		GHOST minGhost=null;		
+		GHOST minGhost=null;
 		
 		for(GHOST ghost : GHOST.values())
 			if(game.getGhostEdibleTime(ghost)>0)
@@ -72,26 +73,3 @@ public class StarterPacMan extends Controller<MOVE>
 		return game.getNextMoveTowardsTarget(current,game.getClosestNodeIndexFromNodeIndex(current,targetsArray,DM.PATH),DM.PATH);
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
