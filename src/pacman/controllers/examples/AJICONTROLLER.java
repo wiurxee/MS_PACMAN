@@ -8,35 +8,49 @@ import pacman.game.Constants.MOVE;
 
 public final class AJICONTROLLER extends Controller<MOVE>
 {
-	private MOVE[] allMoves = MOVE.values();
-	public static Game game;
 	public static AJICONTROLLER singleton;
-	public static int MINDISTANCE = 20;
-	private StateMachine SuperMachine;
+	private MOVE[] allMoves = MOVE.values();
+	public static Game game;	
+	public int MINDISTANCE = 20;
+	public StateMachine SuperMachine;
 	
 	public AJICONTROLLER()
 	{
-		ArrayList<StateMachine> subMachines = new ArrayList<StateMachine>();
+//		ArrayList<StateMachine> subMachines = new ArrayList<StateMachine>();
 		
 		ArrayList<State> estadosAgg = new ArrayList<State>();
-		estadosAgg.add(new SubState_EatGhostAgg());
+		SubState_EatGhostAgg eatGhostAggState = new SubState_EatGhostAgg();
+		estadosAgg.add(eatGhostAggState);
 		
 		ArrayList<State> estadosDef = new ArrayList<State>();
-		estadosDef.add(new SubState_FindSuperPillDeff());
-		estadosDef.add(new SubState_FleeDeff());
+		SubState_FindSuperPillDeff findSuperPillDeffState = new SubState_FindSuperPillDeff();
+		SubState_FleeDeff fleeDeffState = new SubState_FleeDeff();
+		estadosDef.add(findSuperPillDeffState);
+		estadosDef.add(fleeDeffState);
 		
 		ArrayList<State> estadosPas = new ArrayList<State>();
-		estadosPas.add(new SubState_RecollectPass());
+		SubState_RecollectPass recollectPassState = new SubState_RecollectPass();
+		estadosPas.add(recollectPassState);
+		
+		
+		State_Aggressive AggState = new State_Aggressive();
+		State_Defensive DefState = new State_Defensive();
+		State_Passive PasState = new State_Passive();
+		
+		AggState.setSubMachine(new StateMachine(estadosAgg,eatGhostAggState));
+		DefState.setSubMachine(new StateMachine(estadosDef,fleeDeffState));
+		PasState.setSubMachine(new StateMachine(estadosPas, recollectPassState));
 		
 		ArrayList<State> estadosSup= new ArrayList<State>();
-		estadosSup.add(new State_Aggressive());
-		estadosSup.add(new State_Defensive());
-		estadosSup.add(new State_Passive());
+		estadosSup.add(AggState);
+		estadosSup.add(DefState);
+		estadosSup.add(PasState);
 		
-		subMachines.add(new StateMachine(estadosAgg));
-		subMachines.add(new StateMachine(estadosDef));
-		subMachines.add(new StateMachine(estadosPas));
-		SuperMachine = new StateMachine(estadosSup,subMachines);
+//		subMachines.add(new StateMachine(estadosAgg));
+//		subMachines.add(new StateMachine(estadosDef));
+//		subMachines.add(new StateMachine(estadosPas));
+		
+		SuperMachine = new StateMachine(estadosSup,PasState);
 	}
 	
 	/* (non-Javadoc)
@@ -45,6 +59,7 @@ public final class AJICONTROLLER extends Controller<MOVE>
 	public MOVE getMove(Game game,long timeDue)
 	{
 		AJICONTROLLER.game = game;
+		SuperMachine.next();
 		return SuperMachine.action();
 	}	
 }

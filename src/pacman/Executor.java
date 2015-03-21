@@ -50,7 +50,7 @@ public class Executor
 
 		
 		//run multiple games in batch mode - good for testing.
-		int numTrials=30;
+		int numTrials=500;
 		exec.runExperiment(new AJICONTROLLER(),new StarterGhosts(),numTrials);
 		exec.replayGame("maxScoreReplay", true);
 		exec.replayGame("minScoreReplay", true);
