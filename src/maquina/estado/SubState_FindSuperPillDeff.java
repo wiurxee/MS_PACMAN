@@ -12,6 +12,8 @@ public final class SubState_FindSuperPillDeff extends State{
 	}
 	public MOVE action() 
 	{
+		
+		
 		return MOVE.DOWN;
 	}
 	public void Final()
