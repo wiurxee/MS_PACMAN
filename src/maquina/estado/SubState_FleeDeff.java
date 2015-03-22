@@ -9,10 +9,10 @@ import pacman.game.Constants.GHOST;
 import pacman.game.Constants.MOVE;
 import pacman.game.Game;
 
-public final class SubState_FleeDeff  extends State{
-
-	
-	public void next() {
+public final class SubState_FleeDeff  extends State
+{
+	public void next() 
+	{
 		
 		AJICONTROLLER controller = AJICONTROLLER.singleton;
 		
