@@ -1,9 +1,7 @@
 package maquina.estado;
 
 import java.awt.List;
-import java.nio.file.attribute.PosixFilePermission;
 import java.util.ArrayList;
-import java.util.Random;
 
 import pacman.controllers.examples.AJICONTROLLER;
 import pacman.game.Constants.DM;
@@ -36,7 +34,7 @@ public final class SubState_FleeDeff  extends State{
 				targetGhost = ghost;
 			}
 		}
-		if(controller.game.getGhostLairTime(targetGhost) > 0 && controller.game.getGhostEdibleTime(targetGhost) > controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(targetGhost))  || controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(targetGhost)) > controller.MINDISTANCE)
+		if(controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(targetGhost)) != -1 && controller.game.getGhostEdibleTime(targetGhost) > controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(targetGhost))  || controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(targetGhost)) > controller.MINDISTANCE)
 		{
 			Final();
 		}
@@ -77,103 +75,132 @@ public final class SubState_FleeDeff  extends State{
 		AJICONTROLLER controller = AJICONTROLLER.singleton;
 		int current = controller.game.getPacmanCurrentNodeIndex();
 		
-		MOVE nextMove = MOVE.NEUTRAL;
-		
-		//Ghost local save.
+		GHOST targetGhost = null;
 		GHOST[] ghosts = GHOST.values();
-		int[] ghostPositions = new int[ghosts.length];
-		
-		//Ghost position save.
-		for (int i = 0 ; i < ghosts.length ; i++)
+		MOVE[] ghostDirections = new MOVE[ghosts.length];
+
+		//Check if has to transit to defensive state or aggressive state.
+		for(int i = 0 ; i < ghosts.length ; i++)
 		{
-			ghostPositions[i] = controller.game.getGhostCurrentNodeIndex(ghosts[i]);
+			targetGhost = ghosts[i];
+			ghostDirections[i] = controller.game.getNextMoveAwayFromTarget(current, controller.game.getGhostCurrentNodeIndex(targetGhost), DM.PATH);
 		}
 		
-		ArrayList<GHOST> ghostsForOrderCalculation = new ArrayList<GHOST>();
-		for(GHOST ghost : ghosts)
-		{
-			ghostsForOrderCalculation.add(ghost);
-		}
+		GHOST minGhost = null;
 		
-		ArrayList<GHOST> ghostsInDistanceOrder = new ArrayList<GHOST>();
-		double distance = Integer.MAX_VALUE;
-		for (GHOST ghost : ghostsForOrderCalculation)
+		//Check if has to transit to defensive state or aggressive state.
+		for(GHOST ghost : GHOST.values())
 		{
-			double newDistance = controller.game.getDistance(current, controller.game.getGhostCurrentNodeIndex(ghost), DM.PATH);
-			
-			if( newDistance < distance)
+			if(minGhost == null)
 			{
-				ghostsInDistanceOrder.add(0, ghost);
+				minGhost = ghost;
 			}
-			else
+			else if(controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(ghost)) != -1 && controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(ghost)) < controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(minGhost)))
 			{
-				boolean addAtEnd = true;
-				
-				for (int i = 0 ; i < ghostsInDistanceOrder.size() ; i++)
-				{
-					if( newDistance < controller.game.getDistance(current, controller.game.getGhostCurrentNodeIndex(ghostsInDistanceOrder.get(i)), DM.PATH))
-					{
-						ghostsInDistanceOrder.add(i, ghost);
-						addAtEnd = false;
-					}
-				}
-				
-				if (addAtEnd)
-				{
-					ghostsInDistanceOrder.add(ghost);
-				}
+				minGhost = ghost;
 			}
 		}
+		
+		if(controller.debug)
+		{
+			System.out.println("FleeDeff");
+		}
+		
+		MOVE nextMove = controller.game.getNextMoveTowardsTarget(current, controller.game.getGhostCurrentNodeIndex(minGhost), DM.PATH);
 		
 		MOVE[] possibleMoves = controller.game.getPossibleMoves(current);
-		ArrayList<MOVE> possibleMovesList = new ArrayList<MOVE>();
 		
-		for (MOVE move : possibleMoves)
-			possibleMovesList.add(move);
+		int[] moveWeights = new int[4];
+		moveWeights[0] = -100;
+		moveWeights[1] = -100;
+		moveWeights[2] = -100;
+		moveWeights[3] = -100;
 		
-		double closestDistance = controller.game.getDistance(current, controller.game.getGhostCurrentNodeIndex(ghostsInDistanceOrder.get(0)), DM.PATH) ;
-		
-		if (possibleMovesList.size() >= 2 )
+		for (int i = 0 ; i < possibleMoves.length ; i++)
 		{
-			ArrayList<GHOST> ghostsToHaveInAccount = ghostsInDistanceOrder;
-			
-			for(GHOST ghost : ghostsToHaveInAccount)
+			for(int j = 0 ; j < possibleMoves.length ; j++)
 			{
-				MOVE move = controller.game.getNextMoveTowardsTarget(current, controller.game.getGhostCurrentNodeIndex(ghost), DM.PATH);
-				
-				for (int i = 0 ; i > possibleMovesList.size() ; i++)
+				if ( ghostDirections[i] == possibleMoves[j] )
 				{
-					if (possibleMovesList.get(i) == move || possibleMovesList.get(i) == MOVE.NEUTRAL && possibleMovesList.size() != 1)
+					switch(possibleMoves[j])
 					{
-						System.out.println("nanai");
-						possibleMovesList.remove(i);
+					case DOWN:
+						moveWeights[1] = 0;
+						moveWeights[1] += 1;
+						break;
+					case LEFT:
+						moveWeights[3] = 0;
+						moveWeights[3] += 1;
+						break;
+					case RIGHT:
+						moveWeights[2] = 0;
+						moveWeights[2] += 1;
+						break;
+					case UP:
+						moveWeights[0] = 0;
+						moveWeights[0] += 1;
+						break;
 					}
 				}
 			}
-			
-			if (possibleMovesList.size() == 1)
-			{
-				System.out.println("wwwwwwwwwwwwww");
-				nextMove = possibleMovesList.get(0);
-			}
-			else
-			{
+		}
 
-				System.out.println(possibleMovesList.size());
-				Random random = new Random();
-				int moveIndex = random.nextInt(possibleMovesList.size());
+		int minWeight = Integer.MAX_VALUE;
+		int minWeightIndex = -1;
+		int sameWeightDirections = 1;
+		ArrayList<MOVE> sameWeightDirectionsMove = new ArrayList<MOVE>();
+		
+		for (int i = 0; i < moveWeights.length ; i++)
+		{
+			if (moveWeights[i] < minWeight && moveWeights[i] > -1)
+			{
+				minWeight = moveWeights[i];
+				minWeightIndex = i;
+			}
+			else if (moveWeights[i] == minWeight)
+			{
+				sameWeightDirections ++;
 				
-				nextMove = possibleMovesList.get(moveIndex);
+				switch(i)
+				{
+				case 1:
+					sameWeightDirectionsMove.add(MOVE.DOWN);
+					break;
+				case 0:
+					sameWeightDirectionsMove.add(MOVE.UP);
+					break;
+				case 2:
+					sameWeightDirectionsMove.add(MOVE.RIGHT);
+					break;
+				case 3:
+					sameWeightDirectionsMove.add(MOVE.LEFT);
+					break;
+				}
 			}
 		}
-		else
+		
+		if (sameWeightDirections > 1)
 		{
-			nextMove = controller.game.getNextMoveAwayFromTarget(current, controller.game.getGhostCurrentNodeIndex(ghostsInDistanceOrder.get(0)), DM.PATH);
+			GHOST[] closestGhosts = new GHOST[GHOST.values().length];
+			
+			for (int i = 0 ; i < sameWeightDirectionsMove.size() ; i++)
+			{
+				for (int j = 0 ; j < ghosts.length ; j++)
+				{
+					if (controller.game.getNextMoveTowardsTarget(current, controller.game.getGhostCurrentNodeIndex(ghosts[j]), DM.PATH) == sameWeightDirectionsMove.get(i))
+					{
+						
+					}
+				}
+			}
+		}
+		if(controller.debug)
+		{
+			System.out.println("Minweight move -> "+minWeightIndex);
 		}
 		
 		return nextMove;
 	}
-	
 	public void Final()
 	{
 		AJICONTROLLER controller = AJICONTROLLER.singleton;
