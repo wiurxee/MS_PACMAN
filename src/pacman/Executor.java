@@ -50,21 +50,21 @@ public class Executor
 
 		
 		//run multiple games in batch mode - good for testing.
-		int numTrials=500;
+		int numTrials=30;
 		exec.runExperiment(new AJICONTROLLER(),new StarterGhosts(),numTrials);
 		exec.replayGame("maxScoreReplay", true);
 		exec.replayGame("minScoreReplay", true);
 		
-		/*
-		//run a game in synchronous mode: game waits until controllers respond.
-		int delay=5;
-		boolean visual=true;
-		exec.runGame(new RandomPacMan(),new RandomGhosts(),visual,delay);
-  		 */
+//		
+//		//run a game in synchronous mode: game waits until controllers respond.
+//		int delay=5;
+//		boolean visual=true;
+//		exec.runGame(new RandomPacMan(),new RandomGhosts(),visual,delay);
+//  		 
 		
 		///*
 		//run the game in asynchronous mode.
-		boolean visual=true;
+		//boolean visual=true;
 //		exec.runGameTimed(new NearestPillPacMan(),new AggressiveGhosts(),visual);
 		//exec.runGameTimed(new AJICONTROLLER(),new StarterGhosts(),visual);
 //		exec.runGameTimed(new HumanController(new KeyBoardInput()),new StarterGhosts(),visual);	
@@ -133,7 +133,7 @@ public class Executor
 			
 			
 			avgScore+=game.getScore();
-			System.out.println(i+"\t"+game.getScore());
+			System.out.println(i+"\t"+game.getScore() + "\t level:" + game.getCurrentLevel());
 		}
 		
 		System.out.println(avgScore/trials);

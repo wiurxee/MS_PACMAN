@@ -36,6 +36,7 @@ public class StarterPacMan extends Controller<MOVE>
 		GHOST minGhost=null;
 		
 		for(GHOST ghost : GHOST.values())
+		{
 			if(game.getGhostEdibleTime(ghost)>0)
 			{
 				int distance=game.getShortestPathDistance(current,game.getGhostCurrentNodeIndex(ghost));
@@ -46,6 +47,7 @@ public class StarterPacMan extends Controller<MOVE>
 					minGhost=ghost;
 				}
 			}
+		}
 		
 		if(minGhost!=null)	//we found an edible ghost
 			return game.getNextMoveTowardsTarget(game.getPacmanCurrentNodeIndex(),game.getGhostCurrentNodeIndex(minGhost),DM.PATH);

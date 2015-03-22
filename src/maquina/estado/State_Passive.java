@@ -9,7 +9,7 @@ import pacman.game.Constants.MOVE;
 
 public class State_Passive extends State 
 {
-	private StateMachine SubMachine;
+	public StateMachine SubMachine;
 	
 	public void next() 
 	{
@@ -57,13 +57,13 @@ public class State_Passive extends State
 			{
 				minGhost = ghost;
 			}
-			else if(controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(ghost)) < controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(minGhost)))
+			else if(controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(ghost)) != -1 && controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(ghost)) < controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(minGhost)))
 			{
 				minGhost = ghost;
 			}
 		}
 		
-		if(controller.game.getGhostEdibleTime(minGhost) >= controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(minGhost)))
+		if(controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(minGhost)) != -1 && controller.game.getGhostEdibleTime(minGhost) >= controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(minGhost)))
 		{
 			// set State to Aggressive
 			controller.SuperMachine.currentState = controller.SuperMachine.states.get(0);

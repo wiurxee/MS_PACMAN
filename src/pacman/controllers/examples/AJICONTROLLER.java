@@ -10,13 +10,15 @@ public final class AJICONTROLLER extends Controller<MOVE>
 {
 	public static AJICONTROLLER singleton;
 	private MOVE[] allMoves = MOVE.values();
-	public static Game game;	
+	public Game game;	
 	public int MINDISTANCE = 20;
 	public StateMachine SuperMachine;
+	public boolean debug = false;
 	
 	public AJICONTROLLER()
 	{
 //		ArrayList<StateMachine> subMachines = new ArrayList<StateMachine>();
+		singleton = this;
 		
 		ArrayList<State> estadosAgg = new ArrayList<State>();
 		SubState_EatGhostAgg eatGhostAggState = new SubState_EatGhostAgg();
@@ -58,7 +60,7 @@ public final class AJICONTROLLER extends Controller<MOVE>
 	 */
 	public MOVE getMove(Game game,long timeDue)
 	{
-		AJICONTROLLER.game = game;
+		this.game = game;
 		SuperMachine.next();
 		return SuperMachine.action();
 	}	
