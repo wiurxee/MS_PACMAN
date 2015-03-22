@@ -35,7 +35,7 @@ public  class State_Aggressive extends State
 		//Check if has to transit to defensive state or aggressive state.
 		for(GHOST ghost : GHOST.values())
 		{
-			if(controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(ghost)) != -1 && controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(ghost)) < controller.MINDISTANCE)
+			if(controller.game.getGhostLairTime(ghost) == 0 && controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(ghost)) < controller.MINDISTANCE)
 			{		
 				// set current State to deffensive
 				controller.SuperMachine.currentState = controller.SuperMachine.states.get(1);

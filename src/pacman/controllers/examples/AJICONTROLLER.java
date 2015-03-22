@@ -12,8 +12,9 @@ public final class AJICONTROLLER extends Controller<MOVE>
 	private MOVE[] allMoves = MOVE.values();
 	public Game game;	
 	public int MINDISTANCE = 20;
+	public int MAXATTACKDISTANCE = 50;
 	public StateMachine SuperMachine;
-	public boolean debug = false;
+	public boolean debug = true;
 	
 	public AJICONTROLLER()
 	{

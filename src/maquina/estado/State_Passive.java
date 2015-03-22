@@ -18,61 +18,44 @@ public class State_Passive extends State
 	
 	@SuppressWarnings("static-access")
 	public MOVE action() 
-	{
-//		//Declare controller.
-//		pacman.controllers.examples.AJICONTROLLER controller = pacman.controllers.examples.AJICONTROLLER.singleton;
-//		
-//		int current=controller.game.getPacmanCurrentNodeIndex();
-//		int[] pills=controller.game.getPillIndices();
-//		
-//		ArrayList<Integer> targets=new ArrayList<Integer>();
-//		
-//		for(int i=0;i<pills.length;i++)					//check which pills are available			
-//			if(controller.game.isPillStillAvailable(i))
-//				targets.add(pills[i]);
-//		
-//		int[] targetsArray=new int[targets.size()];		//convert from ArrayList to array
-//		
-//		for(int i=0;i<targetsArray.length;i++)
-//			targetsArray[i]=targets.get(i);
-//		
-//		//return the next direction once the closest target has been identified
-//		return controller.game.getNextMoveTowardsTarget(current,controller.game.getClosestNodeIndexFromNodeIndex(current,targetsArray,DM.PATH),DM.PATH);
+	{	
 		return SubMachine.action();
 	}
 	
 	public void Final()
 	{
+		// game controller
 		AJICONTROLLER controller = AJICONTROLLER.singleton;
 		
-		//Calculate what SuperState must run.
-		
+		// current Pacman index node position
 		int current = controller.game.getPacmanCurrentNodeIndex();
-		GHOST minGhost = null;
-		
+				
 		//Check if has to transit to defensive state or aggressive state.
 		for(GHOST ghost : GHOST.values())
 		{
-			if(minGhost == null)
+			// if there are not in the center box
+			if(controller.game.getGhostLairTime(ghost) == 0)
 			{
-				minGhost = ghost;
+				// if the ghost is edible
+				if(controller.game.getGhostEdibleTime(ghost) > controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(ghost)))
+				{
+					// set the current state to Aggresive
+					controller.SuperMachine.currentState = controller.SuperMachine.states.get(0);
+					return;
+				}
 			}
-			else if(controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(ghost)) != -1 && controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(ghost)) < controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(minGhost)))
-			{
-				minGhost = ghost;
-			}
+		}
+		// set the current state to Deffensive
+		controller.SuperMachine.currentState = controller.SuperMachine.states.get(1);
+		
+		if(controller.SuperMachine.currentState instanceof State_Defensive)
+		{
+			State_Defensive defState = (State_Defensive) controller.SuperMachine.currentState;
+			// i set the submachine current state to his auto state (FleeDefensive)
+			defState.SubMachine.currentState = defState.SubMachine.states.get(1);
 		}
 		
-		if(controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(minGhost)) != -1 && controller.game.getGhostEdibleTime(minGhost) >= controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(minGhost)))
-		{
-			// set State to Aggressive
-			controller.SuperMachine.currentState = controller.SuperMachine.states.get(0);
-		}
-		else
-		{
-			// set State to Deffensive
-			controller.SuperMachine.currentState = controller.SuperMachine.states.get(1);
-		}		
+				
 	}
 	
 	public void setSubMachine(StateMachine sub)

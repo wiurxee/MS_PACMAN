@@ -67,7 +67,7 @@ public final class SubState_FleeDeff  extends State{
 			{
 				State_Defensive defState = (State_Defensive) controller.SuperMachine.currentState;
 				
-				// set current submachine State to FleeDefensive.
+				// set current submachine State to FindSuperPillDeff.
 				defState.SubMachine.currentState = defState.SubMachine.states.get(0);
 			}
 		}
@@ -75,52 +75,39 @@ public final class SubState_FleeDeff  extends State{
 	public MOVE action() 
 	{
 		AJICONTROLLER controller = AJICONTROLLER.singleton;
+		
+
+		if(controller.debug)
+		{
+			System.out.println("FleeDeff");
+		}
+		
 		int current = controller.game.getPacmanCurrentNodeIndex();
 		
-		MOVE nextMove = MOVE.NEUTRAL;
 		
-		//Ghost local save.
-		GHOST[] ghosts = GHOST.values();
-		int[] ghostPositions = new int[ghosts.length];
-		
-		//Ghost position save.
-		for (int i = 0 ; i < ghosts.length ; i++)
+		ArrayList<GHOST> sortedGhosts = new ArrayList<GHOST>();
+		// First i sort the Ghost by the distances to PacMan
+		for(GHOST ghost : GHOST.values())
 		{
-			ghostPositions[i] = controller.game.getGhostCurrentNodeIndex(ghosts[i]);
-		}
-		
-		ArrayList<GHOST> ghostsForOrderCalculation = new ArrayList<GHOST>();
-		for(GHOST ghost : ghosts)
-		{
-			ghostsForOrderCalculation.add(ghost);
-		}
-		
-		ArrayList<GHOST> ghostsInDistanceOrder = new ArrayList<GHOST>();
-		double distance = Integer.MAX_VALUE;
-		for (GHOST ghost : ghostsForOrderCalculation)
-		{
-			double newDistance = controller.game.getDistance(current, controller.game.getGhostCurrentNodeIndex(ghost), DM.PATH);
-			
-			if( newDistance < distance)
+			if(sortedGhosts.size() == 0)
 			{
-				ghostsInDistanceOrder.add(0, ghost);
+				sortedGhosts.add(ghost);
 			}
 			else
 			{
-				boolean addAtEnd = true;
-				
-				for (int i = 0 ; i < ghostsInDistanceOrder.size() ; i++)
+				boolean bShouldAddLast = true;
+				for(int i = 0 ; i < sortedGhosts.size() ; i++)
 				{
-					if( newDistance < controller.game.getDistance(current, controller.game.getGhostCurrentNodeIndex(ghostsInDistanceOrder.get(i)), DM.PATH))
+					if(controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(ghost)) != -1 && controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(ghost)) < controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(sortedGhosts.get(i))))
 					{
-						ghostsInDistanceOrder.add(i, ghost);
-						addAtEnd = false;
+						sortedGhosts.add(i,ghost);
+						bShouldAddLast = false;
+						break;
 					}
 				}
-				
-				if (addAtEnd)
+				if(bShouldAddLast && controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(ghost)) != -1)
 				{
-					ghostsInDistanceOrder.add(ghost);
+					sortedGhosts.add(ghost);
 				}
 			}
 		}
@@ -129,45 +116,28 @@ public final class SubState_FleeDeff  extends State{
 		ArrayList<MOVE> possibleMovesList = new ArrayList<MOVE>();
 		
 		for (MOVE move : possibleMoves)
-			possibleMovesList.add(move);
-		
-		double closestDistance = controller.game.getDistance(current, controller.game.getGhostCurrentNodeIndex(ghostsInDistanceOrder.get(0)), DM.PATH) ;
-		
-		if (possibleMovesList.size() >= 2 )
 		{
-			ArrayList<GHOST> ghostsToHaveInAccount = ghostsInDistanceOrder;
-			
-			for(GHOST ghost : ghostsToHaveInAccount)
+			if(move != MOVE.NEUTRAL)
 			{
-				MOVE move = controller.game.getNextMoveTowardsTarget(current, controller.game.getGhostCurrentNodeIndex(ghost), DM.PATH);
-				
-				for (int i = 0 ; i > possibleMovesList.size() ; i++)
+				possibleMovesList.add(move);
+			}
+		}
+			
+		for(GHOST ghost : sortedGhosts)
+		{
+			MOVE move = controller.game.getNextMoveTowardsTarget(current, controller.game.getGhostCurrentNodeIndex(ghost), DM.PATH);
+			
+			for (int i = 0 ; i > possibleMovesList.size() ; i++)
+			{
+				if (possibleMovesList.get(i) == move && possibleMovesList.size() > 1)
 				{
-					if (possibleMovesList.get(i) == move || possibleMovesList.get(i) == MOVE.NEUTRAL && possibleMovesList.size() != 1)
-					{
-						possibleMovesList.remove(i);
-					}
+					possibleMovesList.remove(i);
 				}
 			}
-			
-			if (possibleMovesList.size() == 1)
-			{
-				nextMove = possibleMovesList.get(0);
-			}
-			else
-			{
-				Random random = new Random();
-				int moveIndex = random.nextInt(possibleMovesList.size());
-				
-				nextMove = possibleMovesList.get(moveIndex);
-			}
 		}
-		else
-		{
-			nextMove = controller.game.getNextMoveAwayFromTarget(current, controller.game.getGhostCurrentNodeIndex(ghostsInDistanceOrder.get(0)), DM.PATH);
-		}
+		Random random = new Random();	
 		
-		return nextMove;
+		return possibleMovesList.get(random.nextInt(possibleMovesList.size()));
 	}
 	
 	public void Final()

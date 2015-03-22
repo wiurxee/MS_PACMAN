@@ -70,7 +70,11 @@ public final class SubState_FindSuperPillDeff extends State{
 	public MOVE action() 
 	{
 		AJICONTROLLER controller = AJICONTROLLER.singleton;
-		
+
+		if(controller.debug)
+		{
+			System.out.println("FindSuperPillDef");
+		}
 		//Calculate what SuperState must run.
 		
 		int current = controller.game.getPacmanCurrentNodeIndex();
@@ -93,10 +97,6 @@ public final class SubState_FindSuperPillDeff extends State{
 		for(int i=0;i<targetsArray.length;i++)
 		{
 			targetsArray[i]=targets.get(i);
-		}
-		if(controller.debug)
-		{
-			System.out.println("FindSuperPillDef");
 		}
 		return controller.game.getNextMoveTowardsTarget(current, controller.game.getClosestNodeIndexFromNodeIndex(current,targetsArray,DM.PATH), DM.PATH);
 	}
