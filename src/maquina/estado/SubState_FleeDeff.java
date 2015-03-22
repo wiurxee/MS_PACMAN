@@ -59,7 +59,7 @@ public final class SubState_FleeDeff  extends State{
 			targetsArray[i]=targets.get(i);
 		}
 		
-		if(controller.game.getNextMoveAwayFromTarget(current, controller.game.getGhostCurrentNodeIndex(targetGhost), DM.PATH) == controller.game.getNextMoveTowardsTarget(current, controller.game.getClosestNodeIndexFromNodeIndex(current,targetsArray,DM.PATH), DM.PATH))
+		if(controller.game.getClosestNodeIndexFromNodeIndex(current,targetsArray,DM.PATH) != -1 && controller.game.getNextMoveAwayFromTarget(current, controller.game.getGhostCurrentNodeIndex(targetGhost), DM.PATH) == controller.game.getNextMoveTowardsTarget(current, controller.game.getClosestNodeIndexFromNodeIndex(current,targetsArray,DM.PATH), DM.PATH))
 		{
 			if(controller.SuperMachine.currentState instanceof State_Defensive)
 			{
@@ -194,8 +194,10 @@ public final class SubState_FleeDeff  extends State{
 				}
 			}
 		}
-		
-		System.out.println("Minweight move -> "+minWeightIndex);
+		if(controller.debug)
+		{
+			System.out.println("Minweight move -> "+minWeightIndex);
+		}
 		
 		return nextMove;
 	}

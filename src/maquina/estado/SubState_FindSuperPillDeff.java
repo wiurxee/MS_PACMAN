@@ -57,7 +57,7 @@ public final class SubState_FindSuperPillDeff extends State{
 			targetsArray[i]=targets.get(i);
 		}
 		
-		if(controller.game.getNextMoveAwayFromTarget(current, controller.game.getGhostCurrentNodeIndex(minGhost), DM.PATH) != controller.game.getNextMoveTowardsTarget(current, controller.game.getClosestNodeIndexFromNodeIndex(current,targetsArray,DM.PATH), DM.PATH))
+		if(controller.game.getClosestNodeIndexFromNodeIndex(current,targetsArray,DM.PATH) == -1 || controller.game.getNextMoveAwayFromTarget(current, controller.game.getGhostCurrentNodeIndex(minGhost), DM.PATH) != controller.game.getNextMoveTowardsTarget(current, controller.game.getClosestNodeIndexFromNodeIndex(current,targetsArray,DM.PATH), DM.PATH))
 		{
 			if(controller.SuperMachine.currentState instanceof State_Defensive)
 			{
