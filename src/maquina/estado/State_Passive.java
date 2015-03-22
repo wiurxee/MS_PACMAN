@@ -72,9 +72,7 @@ public class State_Passive extends State
 		{
 			// set State to Deffensive
 			controller.SuperMachine.currentState = controller.SuperMachine.states.get(1);
-		}
-		
-		
+		}		
 	}
 	
 	public void setSubMachine(StateMachine sub)

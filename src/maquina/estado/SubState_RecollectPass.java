@@ -10,8 +10,8 @@ import pacman.game.Game;
 
 public class SubState_RecollectPass extends State {
 
-	public void next() {
-		
+	public void next() 
+	{	
 		AJICONTROLLER controller = AJICONTROLLER.singleton;
 		
 		//Calculate what SuperState must run.
@@ -31,17 +31,18 @@ public class SubState_RecollectPass extends State {
 				minGhost = ghost;
 			}
 		}
+		
 		if(minGhost != null)
 		{
-		if(controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(minGhost)) != -1 && (controller.game.getGhostEdibleTime(minGhost) > controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(minGhost)) || controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(minGhost)) < controller.MINDISTANCE))
-		{
-			Final();
-		}
-		}
-		
+			if(controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(minGhost)) != -1 && (controller.game.getGhostEdibleTime(minGhost) > controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(minGhost)) || controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(minGhost)) < controller.MINDISTANCE))
+			{
+				Final();
+			}
+		}	
 	}
-	public MOVE action() {
-		
+	
+	public MOVE action() 
+	{	
 		AJICONTROLLER controller = AJICONTROLLER.singleton;
 			
 		int[] pills = controller.game.getPillIndices();
@@ -62,12 +63,15 @@ public class SubState_RecollectPass extends State {
 		{
 			targetsArray[i] = targets.get(i);
 		}
+		
 		if(controller.debug)
 		{
 			System.out.println("RecollectPass");
 		}
+		
 		return controller.game.getNextMoveTowardsTarget(controller.game.getPacmanCurrentNodeIndex(), controller.game.getClosestNodeIndexFromNodeIndex(controller.game.getPacmanCurrentNodeIndex(),targetsArray,DM.PATH), DM.PATH);
 	}
+	
 	public void Final()
 	{
 		AJICONTROLLER controller = AJICONTROLLER.singleton;
