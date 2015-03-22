@@ -145,7 +145,6 @@ public final class SubState_FleeDeff  extends State{
 				{
 					if (possibleMovesList.get(i) == move || possibleMovesList.get(i) == MOVE.NEUTRAL && possibleMovesList.size() != 1)
 					{
-						System.out.println("nanai");
 						possibleMovesList.remove(i);
 					}
 				}
@@ -153,13 +152,10 @@ public final class SubState_FleeDeff  extends State{
 			
 			if (possibleMovesList.size() == 1)
 			{
-				System.out.println("wwwwwwwwwwwwww");
 				nextMove = possibleMovesList.get(0);
 			}
 			else
 			{
-
-				System.out.println(possibleMovesList.size());
 				Random random = new Random();
 				int moveIndex = random.nextInt(possibleMovesList.size());
 				
