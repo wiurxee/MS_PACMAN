@@ -59,33 +59,36 @@ public class SubState_EatGhostAgg extends State{
 		// First i sort the Ghost by the distances to PacMan
 		for(GHOST ghost : GHOST.values())
 		{
-			// If there is no previus ghost on the list, this will be the first one
-			if(sortedGhosts.size() == 0)
-			{
-				sortedGhosts.add(ghost);
-			}
-			else
-			{
-				// Whether the ghost should be added at the end of the list or not
-				boolean bShouldAddLast = true;
-				// for every ghost in the sorted list
-				for(int i = 0 ; i < sortedGhosts.size() ; i++)
-				{
-					// first i check if the ghost is not on the lair
-					// if the distance to the current ghost is less than the one to the ghost in the least, it means it should go before in the list
-					if(controller.game.getGhostLairTime(ghost) == 0 && controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(ghost)) < controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(sortedGhosts.get(i))))
-					{
-						// add the ghost before the other in the list 
-						sortedGhosts.add(i,ghost);
-						// and we not need longer to add it on the end of the list
-						bShouldAddLast = false;
-						break;
-					}
-				}
-				// check if the pacman is not on the lair and it should be added at the end
-				if(bShouldAddLast && controller.game.getGhostLairTime(ghost) == 0)
+			if(controller.game.getGhostLairTime(ghost) == 0)
+			{	
+				// If there is no previus ghost on the list, this will be the first one
+				if(sortedGhosts.size() == 0)
 				{
 					sortedGhosts.add(ghost);
+				}
+				else
+				{
+					// Whether the ghost should be added at the end of the list or not
+					boolean bShouldAddLast = true;
+					// for every ghost in the sorted list
+					for(int i = 0 ; i < sortedGhosts.size() ; i++)
+					{
+						// first i check if the ghost is not on the lair
+						// if the distance to the current ghost is less than the one to the ghost in the least, it means it should go before in the list
+						if(controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(ghost)) < controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(sortedGhosts.get(i))))
+						{
+							// add the ghost before the other in the list 
+							sortedGhosts.add(i,ghost);
+							// and we not need longer to add it at the end of the list
+							bShouldAddLast = false;
+							break;
+						}
+					}
+					// check if the pacman is not on the lair and it should be added at the end
+					if(bShouldAddLast && controller.game.getGhostLairTime(ghost) == 0)
+					{
+						sortedGhosts.add(ghost);
+					}
 				}
 			}
 		}
@@ -140,14 +143,18 @@ public class SubState_EatGhostAgg extends State{
 //				int[] pathPacman = controller.game.getShortestPath(controller.game.getGhostCurrentNodeIndex(targetGhost),current);
 //				int[] pathGhost = controller.game.getShortestPath(controller.game.getGhostCurrentNodeIndex(ghost), current);
 //				boolean bShouldGoAfterTarget = false;
+//				boolean bFirstCoincidence = false;
 //				for(int i = 0; i < pathGhost.length ; i++)
 //				{
 //					for(int j = 0 ; j < pathPacman.length ; j++)
 //					{
-//						if(pathGhost[i] == pathPacman[j] && controller.game.getShortestPathDistance(controller.game.getGhostCurrentNodeIndex(ghost) , pathGhost[i]) < controller.game.getShortestPathDistance(current, pathGhost[i]))
+//						if(pathGhost[i] == pathPacman[j] && !bFirstCoincidence)
 //						{
-//							bShouldGoAfterTarget = true;
-//							break;
+//							if( controller.game.getShortestPathDistance(controller.game.getGhostCurrentNodeIndex(ghost) , pathGhost[i]) < controller.game.getShortestPathDistance(current, pathGhost[i]))
+//							{
+//								bShouldGoAfterTarget = true;
+//							}
+//							bFirstCoincidence = true;
 //						}
 //					}
 //				}

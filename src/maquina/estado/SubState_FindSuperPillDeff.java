@@ -1,6 +1,7 @@
 package maquina.estado;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import pacman.controllers.examples.AJICONTROLLER;
 import pacman.game.Constants.DM;
@@ -44,20 +45,8 @@ public final class SubState_FindSuperPillDeff extends State{
 		{
 			Final();
 		}
-		int[] powerPills = controller.game.getPowerPillIndices();	
 		
-		ArrayList<Integer> targets=new ArrayList<Integer>();
-		
-			
-		for(int i=0;i<powerPills.length;i++)			//check with power pills are available
-		{	
-			if(controller.game.isPowerPillStillAvailable(i))
-			{
-				targets.add(powerPills[i]);	
-			}
-		}
-		
-		if(targets.size() == 0)
+		if(controller.game.getActivePowerPillsIndices().length == 0)
 		{
 			if(controller.SuperMachine.currentState instanceof State_Defensive)
 			{
@@ -100,7 +89,10 @@ public final class SubState_FindSuperPillDeff extends State{
 			targetsArray[i]=targets.get(i);
 		}
 		int nearestPowerPill = controller.game.getClosestNodeIndexFromNodeIndex(current,targetsArray,DM.PATH);
+		if(nearestPowerPill != -1)
 		return controller.game.getNextMoveTowardsTarget(current, nearestPowerPill , DM.PATH);
+		Random rand = new Random();
+		return MOVE.values()[rand.nextInt(MOVE.values().length)];
 		
 	}
 	public void Final()

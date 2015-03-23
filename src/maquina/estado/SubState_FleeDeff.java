@@ -1,6 +1,7 @@
 package maquina.estado;
 
 import java.awt.List;
+import java.nio.file.PathMatcher;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.ArrayList;
 import java.util.Random;
@@ -46,69 +47,26 @@ public final class SubState_FleeDeff  extends State{
 				}
 			}
 		}
-		if(controller.game.getActivePowerPillsIndices().length == 0 || targetGhost == null || controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(targetGhost)) > controller.MINDISTANCE)
+		if(targetGhost == null || controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(targetGhost)) > controller.MINDISTANCE)
 		{
 			Final();
 		}
 		
-		int[] powerPills = controller.game.getPowerPillIndices();	
 		
-		ArrayList<Integer> targets=new ArrayList<Integer>();
 		
-			
-		for(int i=0;i<powerPills.length;i++)			//check with power pills are available
-		{	
-			if(controller.game.isPowerPillStillAvailable(i))
-			{
-				targets.add(powerPills[i]);	
-			}
-		}
-		
-		int[] targetsArray=new int[targets.size()];		//convert from ArrayList to array
-		
-		for(int i=0;i<targetsArray.length;i++)
+		int[] targetsArray=controller.game.getActivePowerPillsIndices();		//convert from ArrayList to array
+		int nearestPowerPillIndex =  controller.game.getClosestNodeIndexFromNodeIndex(current,targetsArray,DM.PATH);			
+		if(targetsArray.length != 0 && controller.game.getShortestPathDistance(current, nearestPowerPillIndex) < controller.MAXATTACKDISTANCE)
 		{
-			targetsArray[i]=targets.get(i);
-		}
-		if(targetsArray.length != 0 && targetGhost != null)
-		{
-			
-			int nearestPowerPillIndex = controller.game.getClosestNodeIndexFromNodeIndex(current,targetsArray,DM.PATH);
-			
-			boolean bShouldStayOnFlee = false;
-			
-			for(GHOST ghost : GHOST.values())
+			if(controller.SuperMachine.currentState instanceof State_Defensive)
 			{
-				if(controller.game.getGhostLairTime(ghost) == 0)
-				{
-					int[] pathPacman = controller.game.getShortestPath(nearestPowerPillIndex,current);
-					int[] pathGhost = controller.game.getShortestPath(controller.game.getGhostCurrentNodeIndex(ghost), current);
-					
-					for(int i = 0; i < pathGhost.length ; i++)
-					{
-						for(int j = 0 ; j < pathPacman.length ; j++)
-						{
-							if(pathGhost[i] == pathPacman[j] && controller.game.getShortestPathDistance(controller.game.getGhostCurrentNodeIndex(ghost) , pathGhost[i]) < controller.game.getShortestPathDistance(current, pathGhost[i]))
-							{
-								bShouldStayOnFlee = true;
-								break;
-							}
-						}
-					}
-				}
-			}
-			
-			if(!bShouldStayOnFlee)
-			{
-				if(controller.SuperMachine.currentState instanceof State_Defensive)
-				{
-					State_Defensive defState = (State_Defensive) controller.SuperMachine.currentState;
-					
-					// set current submachine State to FindSuperPillDeff.
-					defState.SubMachine.currentState = defState.SubMachine.states.get(0);
-				}
+				State_Defensive defState = (State_Defensive) controller.SuperMachine.currentState;
+				
+				// set current submachine State to FindSuperPillDeff.
+				defState.SubMachine.currentState = defState.SubMachine.states.get(0);
 			}
 		}
+		
 	}
 	public MOVE action() 
 	{
@@ -127,25 +85,28 @@ public final class SubState_FleeDeff  extends State{
 		// First i sort the Ghost by the distances to PacMan
 		for(GHOST ghost : GHOST.values())
 		{
-			if(sortedGhosts.size() == 0)
+			if(controller.game.getGhostLairTime(ghost) == 0 && controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(ghost)) != -1)
 			{
-				sortedGhosts.add(ghost);
-			}
-			else
-			{
-				boolean bShouldAddLast = true;
-				for(int i = 0 ; i < sortedGhosts.size() ; i++)
-				{
-					if(controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(ghost)) != -1 && controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(ghost)) < controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(sortedGhosts.get(i))))
-					{
-						sortedGhosts.add(i,ghost);
-						bShouldAddLast = false;
-						break;
-					}
-				}
-				if(bShouldAddLast && controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(ghost)) != -1)
+				if(sortedGhosts.size() == 0)
 				{
 					sortedGhosts.add(ghost);
+				}
+				else
+				{
+					boolean bShouldAddLast = true;
+					for(int i = 0 ; i < sortedGhosts.size() ; i++)
+					{
+						if(controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(ghost)) < controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(sortedGhosts.get(i))))
+						{
+							sortedGhosts.add(i,ghost);
+							bShouldAddLast = false;
+							break;
+						}
+					}
+					if(bShouldAddLast)
+					{
+						sortedGhosts.add(ghost);
+					}	
 				}
 			}
 		}
@@ -161,41 +122,46 @@ public final class SubState_FleeDeff  extends State{
 			}
 		}
 			
-		for(GHOST ghost : sortedGhosts)
+		for(GHOST ghost: sortedGhosts)
 		{
 			MOVE move = controller.game.getNextMoveTowardsTarget(current, controller.game.getGhostCurrentNodeIndex(ghost), DM.PATH);
-			
-			for (int i = 0 ; i > possibleMovesList.size() ; i++)
+			int[] pathPacman = controller.game.getShortestPath(current, controller.game.getGhostCurrentNodeIndex(ghost));
+			int primerCruce = 0;
+			for(int i = 0; i < pathPacman.length ; i++)
 			{
-				if (possibleMovesList.get(i) == move && possibleMovesList.size() > 1)
+				if(controller.game.getPossibleMoves(pathPacman[i]).length > 2)
 				{
-					possibleMovesList.remove(i);
+					primerCruce = pathPacman[i];
+					break;
+				}
+			}
+			boolean bShouldChangeDirection = true;
+			if(primerCruce != 0)
+			{
+				if(controller.game.getShortestPathDistance(current, primerCruce) < controller.game.getShortestPathDistance(controller.game.getGhostCurrentNodeIndex(ghost), primerCruce))
+				{
+					bShouldChangeDirection = false;
+				}
+			}
+			
+			for (int j = 0 ; j < possibleMovesList.size() ; j++)
+			{
+				if (possibleMovesList.get(j) == move && possibleMovesList.size() > 1 && bShouldChangeDirection)
+				{
+					possibleMovesList.remove(j);
 				}
 			}
 		}
-		
-		int[] powerPills = controller.game.getPowerPillIndices();	
-		
-		ArrayList<Integer> targets=new ArrayList<Integer>();
-		
-			
-		for(int i=0;i<powerPills.length;i++)			//check with power pills are available
-		{	
-			if(controller.game.isPowerPillStillAvailable(i))
-			{
-				targets.add(powerPills[i]);	
-			}
+		if(possibleMovesList.size() == 1)
+		{
+			return possibleMovesList.get(0);
 		}
 		
-		int[] targetsArray=new int[targets.size()];		//convert from ArrayList to array
+		int[] powerPills = controller.game.getActivePowerPillsIndices();
 		
-		for(int i=0;i<targetsArray.length;i++)
+		if(powerPills.length != 0 && possibleMovesList.size() > 1)
 		{
-			targetsArray[i]=targets.get(i);
-		}
-		if(targetsArray.length != 0)
-		{
-			int nearestPowerPillIndex = controller.game.getClosestNodeIndexFromNodeIndex(current,targetsArray,DM.PATH);
+			int nearestPowerPillIndex = controller.game.getClosestNodeIndexFromNodeIndex(current,powerPills,DM.PATH);
 			MOVE move = controller.game.getNextMoveTowardsTarget(current, nearestPowerPillIndex, DM.PATH);
 			for(int i = 0 ; i < possibleMovesList.size() ; i++)
 			{
@@ -203,10 +169,14 @@ public final class SubState_FleeDeff  extends State{
 				{
 					return move;
 				}
+				// else if there is one possibility that distance us from the target, we will remove it, because it is counterproductive
+				else if(possibleMovesList.get(i) == controller.game.getNextMoveAwayFromTarget(current,nearestPowerPillIndex, DM.PATH))
+				{
+					possibleMovesList.remove(i);
+				}
 			}
 		}
 		Random random = new Random();	
-		
 		return possibleMovesList.get(random.nextInt(possibleMovesList.size()));
 	}
 	
