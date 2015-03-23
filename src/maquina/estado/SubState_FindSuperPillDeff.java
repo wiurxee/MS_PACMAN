@@ -18,25 +18,32 @@ public final class SubState_FindSuperPillDeff extends State{
 		//Calculate what SuperState must run.
 		
 		int current = controller.game.getPacmanCurrentNodeIndex();
-		GHOST minGhost = null;
+		GHOST targetGhost = null;
 		
 		//Check if has to transit to defensive state or aggressive state.
 		for(GHOST ghost : GHOST.values())
 		{
-			if(minGhost == null)
+			if(controller.game.getGhostLairTime(ghost) == 0)
 			{
-				minGhost = ghost;
-			}
-			else if(controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(ghost)) != -1 && controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(ghost)) < controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(minGhost)))
-			{
-				minGhost = ghost;
+				if(controller.game.getGhostEdibleTime(ghost) > controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(ghost)))
+				{
+					Final();
+					return;
+				}
+				if(targetGhost == null)
+				{
+					targetGhost = ghost;
+				}
+				else if(controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(ghost)) != -1 && controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(ghost)) < controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(targetGhost)))
+				{
+					targetGhost = ghost;
+				}
 			}
 		}
-		if(controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(minGhost)) != -1 && (controller.game.getGhostEdibleTime(minGhost) > controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(minGhost)) || controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(minGhost)) > controller.MINDISTANCE))
+		if(targetGhost == null || controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(targetGhost)) > controller.MINDISTANCE)
 		{
 			Final();
 		}
-		
 		int[] powerPills = controller.game.getPowerPillIndices();	
 		
 		ArrayList<Integer> targets=new ArrayList<Integer>();
@@ -50,20 +57,14 @@ public final class SubState_FindSuperPillDeff extends State{
 			}
 		}
 		
-		int[] targetsArray =new int[targets.size()];		//convert from ArrayList to array
-		
-		for(int i=0;i<targetsArray.length;i++)
-		{
-			targetsArray[i]=targets.get(i);
-		}
-		
-		if(controller.game.getClosestNodeIndexFromNodeIndex(current,targetsArray,DM.PATH) == -1 || controller.game.getNextMoveAwayFromTarget(current, controller.game.getGhostCurrentNodeIndex(minGhost), DM.PATH) != controller.game.getNextMoveTowardsTarget(current, controller.game.getClosestNodeIndexFromNodeIndex(current,targetsArray,DM.PATH), DM.PATH))
+		if(targets.size() == 0)
 		{
 			if(controller.SuperMachine.currentState instanceof State_Defensive)
 			{
-			State_Defensive defState = (State_Defensive) controller.SuperMachine.currentState;
-			// set current submachine State to FleeDefensive.
-			defState.SubMachine.currentState = defState.SubMachine.states.get(1);
+				State_Defensive defState = (State_Defensive) controller.SuperMachine.currentState;
+				
+				// set current submachine State to FindSuperPillDeff.
+				defState.SubMachine.currentState = defState.SubMachine.states.get(1);
 			}
 		}
 	}
@@ -98,7 +99,9 @@ public final class SubState_FindSuperPillDeff extends State{
 		{
 			targetsArray[i]=targets.get(i);
 		}
-		return controller.game.getNextMoveTowardsTarget(current, controller.game.getClosestNodeIndexFromNodeIndex(current,targetsArray,DM.PATH), DM.PATH);
+		int nearestPowerPill = controller.game.getClosestNodeIndexFromNodeIndex(current,targetsArray,DM.PATH);
+		return controller.game.getNextMoveTowardsTarget(current, nearestPowerPill , DM.PATH);
+		
 	}
 	public void Final()
 	{

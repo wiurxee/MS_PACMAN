@@ -50,10 +50,14 @@ public class Executor
 
 		
 		//run multiple games in batch mode - good for testing.
-//		int numTrials=50;
-//		exec.runExperiment(new AJICONTROLLER(),new StarterGhosts(),numTrials);
+		int numTrials=500;
+		exec.runExperiment(new AJICONTROLLER(false),new StarterGhosts(),numTrials);
 //		exec.replayGame("maxScoreReplay", true);
 //		exec.replayGame("minScoreReplay", true);
+//		exec.replayGame("maxLevelReplay", true);
+		
+		boolean visual = true;
+//		exec.runGameTimed(new AJICONTROLLER(true),new StarterGhosts(),visual);
 		
 //		
 //		//run a game in synchronous mode: game waits until controllers respond.
@@ -64,9 +68,8 @@ public class Executor
 		
 		///*
 		//run the game in asynchronous mode.
-		boolean visual=true;
+		
 //		exec.runGameTimed(new NearestPillPacMan(),new AggressiveGhosts(),visual);
-		exec.runGameTimed(new AJICONTROLLER(),new StarterGhosts(),visual);
 //		exec.runGameTimed(new HumanController(new KeyBoardInput()),new StarterGhosts(),visual);	
 		//*/
 		
@@ -102,6 +105,7 @@ public class Executor
     	double avgScore=0;
     	double maxScore=0;
     	double minScore=9999999;
+    	int maxLevel = 0;
     	
     	Random rnd=new Random(0);
 		Game game;
@@ -119,7 +123,11 @@ public class Executor
 		        		ghostController.getMove(game.copy(),System.currentTimeMillis()+DELAY));
 		        replay.append(game.getGameState() + "\n");
 			}
-			
+			if(game.getScore()>maxScore || game.getCurrentLevel() > maxLevel)
+			{
+				saveToFile(replay.toString(), "maxLevelReplay", false);
+				maxLevel = game.getCurrentLevel();
+			}
 			if(game.getScore()>maxScore)
 			{
 				saveToFile(replay.toString(), "maxScoreReplay", false);
@@ -136,9 +144,10 @@ public class Executor
 			System.out.println(i+"\t"+game.getScore() + "\t level:" + game.getCurrentLevel());
 		}
 		
-		System.out.println(avgScore/trials);
-		System.out.println("Max Score:" + maxScore);
-		System.out.println("Min Score" + minScore);
+		System.out.println("Average Score: " + avgScore/trials);
+		System.out.println("Max Score: " + maxScore);
+		System.out.println("Min Score: " + minScore);
+		System.out.println("Max Level: " + maxLevel);
     }
 	
 	/**

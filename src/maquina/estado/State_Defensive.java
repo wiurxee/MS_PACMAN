@@ -17,10 +17,6 @@ public class State_Defensive extends State
 	@SuppressWarnings("static-access")
 	public MOVE action()
 	{
-		//Declare controller.
-//		pacman.controllers.examples.AJICONTROLLER controller = pacman.controllers.examples.AJICONTROLLER.singleton;
-//		
-//		return controller.game.getNextMoveAwayFromTarget(controller.game.getPacmanCurrentNodeIndex(),controller.game.getGhostCurrentNodeIndex(ghost),DM.PATH);
 		return SubMachine.action();
 	}
 	
@@ -31,31 +27,26 @@ public class State_Defensive extends State
 		//Calculate what SuperState must run.
 		
 		int current = controller.game.getPacmanCurrentNodeIndex();
-		GHOST minGhost = null;
 		
 		//Check if has to transit to defensive state or aggressive state.
 		for(GHOST ghost : GHOST.values())
 		{
-			if(minGhost == null)
+			// if there are not in the center box
+			if(controller.game.getGhostLairTime(ghost) == 0)
 			{
-				minGhost = ghost;
-			}
-			else if(controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(ghost)) != -1 && controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(ghost)) < controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(minGhost)))
-			{
-				minGhost = ghost;
+				// if the ghost is edible
+				if(controller.game.getGhostEdibleTime(ghost) > controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(ghost)))
+				{
+					// set the current state to Aggresive
+					controller.SuperMachine.currentState = controller.SuperMachine.states.get(0);
+					return;
+				}
 			}
 		}
 		
-		if(controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(minGhost)) != -1 && controller.game.getGhostEdibleTime(minGhost) >= controller.game.getShortestPathDistance(current, controller.game.getGhostCurrentNodeIndex(minGhost)))
-		{
-			// set State to Aggressive
-			controller.SuperMachine.currentState = controller.SuperMachine.states.get(0);
-		}
-		else
-		{
-			// set State to Passive
-			controller.SuperMachine.currentState = controller.SuperMachine.states.get(2);
-		}
+		// set State to Passive
+		controller.SuperMachine.currentState = controller.SuperMachine.states.get(2);
+		
 		
 	}
 

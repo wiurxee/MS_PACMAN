@@ -11,16 +11,16 @@ public final class AJICONTROLLER extends Controller<MOVE>
 	public static AJICONTROLLER singleton;
 	private MOVE[] allMoves = MOVE.values();
 	public Game game;	
-	public int MINDISTANCE = 20;
-	public int MAXATTACKDISTANCE = 50;
+	public int MINDISTANCE = 40;
+	public int MAXATTACKDISTANCE = 80;
 	public StateMachine SuperMachine;
-	public boolean debug = true;
+	public boolean debug = false;
 	
-	public AJICONTROLLER()
+	public AJICONTROLLER(boolean debug)
 	{
 //		ArrayList<StateMachine> subMachines = new ArrayList<StateMachine>();
 		singleton = this;
-		
+		this.debug = debug;
 		ArrayList<State> estadosAgg = new ArrayList<State>();
 		SubState_EatGhostAgg eatGhostAggState = new SubState_EatGhostAgg();
 		estadosAgg.add(eatGhostAggState);

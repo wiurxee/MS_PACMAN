@@ -135,13 +135,31 @@ public class SubState_EatGhostAgg extends State{
 		{
 			// get the move we need to reach that ghost, because we wont to delete it from our list of moves ( just to go in other direction)
 			MOVE moveTowardGhost = controller.game.getNextMoveTowardsTarget(current, controller.game.getGhostCurrentNodeIndex(ghost), DM.PATH);
-			
-			// if that move is on our list, we remove it
-			for(int i = 0; i < remainingPosibleMoves.size() ; i++)
+			if(controller.game.getGhostLairTime(ghost) == 0)
 			{
-				if(remainingPosibleMoves.get(i)  == moveTowardGhost && remainingPosibleMoves.size() > 1)
+//				int[] pathPacman = controller.game.getShortestPath(controller.game.getGhostCurrentNodeIndex(targetGhost),current);
+//				int[] pathGhost = controller.game.getShortestPath(controller.game.getGhostCurrentNodeIndex(ghost), current);
+//				boolean bShouldGoAfterTarget = false;
+//				for(int i = 0; i < pathGhost.length ; i++)
+//				{
+//					for(int j = 0 ; j < pathPacman.length ; j++)
+//					{
+//						if(pathGhost[i] == pathPacman[j] && controller.game.getShortestPathDistance(controller.game.getGhostCurrentNodeIndex(ghost) , pathGhost[i]) < controller.game.getShortestPathDistance(current, pathGhost[i]))
+//						{
+//							bShouldGoAfterTarget = true;
+//							break;
+//						}
+//					}
+//				}
+				
+				
+				// if that move is on our list, we remove it
+				for(int i = 0; i < remainingPosibleMoves.size() ; i++)
 				{
-					remainingPosibleMoves.remove(i);
+					if(remainingPosibleMoves.get(i)  == moveTowardGhost && remainingPosibleMoves.size() > 1 /*&& !bShouldGoAfterTarget*/)
+					{
+						remainingPosibleMoves.remove(i);
+					}
 				}
 			}
 		}
