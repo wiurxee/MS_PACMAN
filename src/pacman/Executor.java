@@ -14,6 +14,7 @@ import pacman.controllers.Controller;
 import pacman.controllers.HumanController;
 import pacman.controllers.KeyBoardInput;
 import pacman.controllers.examples.AJICONTROLLER;
+import pacman.controllers.examples.AJIGHOSTS;
 import pacman.controllers.examples.AggressiveGhosts;
 import pacman.controllers.examples.Legacy;
 import pacman.controllers.examples.Legacy2TheReckoning;
@@ -51,13 +52,13 @@ public class Executor
 		
 		//run multiple games in batch mode - good for testing.
 		int numTrials=500;
-		exec.runExperiment(new AJICONTROLLER(false),new StarterGhosts(),numTrials);
-		exec.replayGame("maxScoreReplay", true);
-		exec.replayGame("minScoreReplay", true);
+//		exec.runExperiment(new StarterPacMan(),new AJIGHOSTS(false),numTrials);
+//		exec.replayGame("maxScoreReplay", true);
+//		exec.replayGame("minScoreReplay", true);
 //		exec.replayGame("maxLevelReplay", true);
 		
 		boolean visual = true;
-//		exec.runGameTimed(new AJICONTROLLER(true),new StarterGhosts(),visual);
+		exec.runGameTimed(new StarterPacMan(),new AJIGHOSTS(true),visual);
 		
 //		
 //		//run a game in synchronous mode: game waits until controllers respond.
@@ -70,7 +71,7 @@ public class Executor
 		//run the game in asynchronous mode.
 		
 //		exec.runGameTimed(new NearestPillPacMan(),new AggressiveGhosts(),visual);
-//		exec.runGameTimed(new HumanController(new KeyBoardInput()),new StarterGhosts(),visual);	
+//		exec.runGameTimed(new HumanController(new KeyBoardInput()),new AJIGHOSTS(true),visual);	
 		//*/
 		
 		/*
