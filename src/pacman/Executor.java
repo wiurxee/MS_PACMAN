@@ -58,7 +58,7 @@ public class Executor
 //		exec.replayGame("maxLevelReplay", true);
 		
 		boolean visual = true;
-		exec.runGameTimed(new StarterPacMan(),new AJIGHOSTS(true),visual);
+//		exec.runGameTimed(new StarterPacMan(),new AJIGHOSTS(false),visual);
 		
 //		
 //		//run a game in synchronous mode: game waits until controllers respond.
@@ -71,7 +71,7 @@ public class Executor
 		//run the game in asynchronous mode.
 		
 //		exec.runGameTimed(new NearestPillPacMan(),new AggressiveGhosts(),visual);
-//		exec.runGameTimed(new HumanController(new KeyBoardInput()),new AJIGHOSTS(true),visual);	
+		exec.runGameTimed(new HumanController(new KeyBoardInput()),new AJIGHOSTS(false),visual);	
 		//*/
 		
 		/*

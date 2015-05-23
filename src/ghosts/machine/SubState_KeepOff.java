@@ -72,7 +72,6 @@ public class SubState_KeepOff extends State {
 				crossNearPillIndice = pathPacmanSuperPill[i];
 				break;
 			}
-			
 		}		
 				
 		return controller.game.getApproximateNextMoveTowardsTarget(controller.game.getGhostCurrentNodeIndex(myGhost), crossNearPillIndice, controller.game.getGhostLastMoveMade(myGhost), DM.PATH);

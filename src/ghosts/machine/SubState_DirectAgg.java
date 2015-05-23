@@ -14,41 +14,59 @@ public class SubState_DirectAgg extends State {
 
 	@Override
 	public float next() {
+		
 		AJIGHOSTS controller = AJIGHOSTS.singleton;
-		GhostMachine myMachine = null;
 		
-		for(GhostMachine gMachine:controller.Ghosts)
-		{
-			if(gMachine.myGhost == myGhost)
-			{
-				myMachine = gMachine;
-				break;
-			}
-		}
+		float weight = 0;
+		float Wmax; 
+		int currDistance = controller.game.getShortestPathDistance(controller.game.getPacmanCurrentNodeIndex(), controller.game.getGhostCurrentNodeIndex(myGhost));
 		
-		// TODO Auto-generated method stub
-		if(myMachine.currentState instanceof State_Aggressive)
+		/*Calculate distance percentage of weight*/
+		float min, max;
+		Wmax = 0.3f;
+		
+		min = controller.veryCloseDistance - 5;
+		max = controller.veryCloseDistance + 5;
+				
+		weight += Wmax - (Math.max(0, Math.min(max-min, currDistance - min))/(max - min) ) * Wmax;
+		
+		Wmax = 0.9f;
+		
+		min = controller.farDistance - 5;
+		max = controller.farDistance + 5;
+		
+		weight += (Math.max(0, Math.min(max-min, currDistance - min))/(max - min) ) * Wmax;
+		
+		/*End Distance*/
+		
+		/*Distance Order Between The Ghosts*/
+		
+		Wmax = 0.7f;
+		
+		boolean bIAmClosest = true;
+		
+		int distanceMyGhostToPacman = controller.game.getShortestPathDistance(controller.game.getGhostCurrentNodeIndex(myGhost), controller.game.getPacmanCurrentNodeIndex());
+		
+		for(GHOST g: GHOST.values())
 		{
-			State_Aggressive aggState = (State_Aggressive) myMachine.currentState;
-			boolean bShouldChangeWrap = false;
-			int distanceMyGhostToPacman = controller.game.getShortestPathDistance(controller.game.getGhostCurrentNodeIndex(myGhost), controller.game.getPacmanCurrentNodeIndex());
-			for(GHOST g: GHOST.values())
+			if(g != myGhost && controller.game.getGhostLairTime(g) == 0)
 			{
-				if(g != myGhost && controller.game.getGhostLairTime(g) == 0)
+				if(controller.game.getShortestPathDistance(controller.game.getGhostCurrentNodeIndex(g), controller.game.getPacmanCurrentNodeIndex()) < distanceMyGhostToPacman)
 				{
-					if(controller.game.getShortestPathDistance(controller.game.getGhostCurrentNodeIndex(g), controller.game.getPacmanCurrentNodeIndex()) < distanceMyGhostToPacman)
-					{
-						bShouldChangeWrap = true;
-					}
+					bIAmClosest = false;
 				}
-			}	
-			
-			if(bShouldChangeWrap)
-			{
-				aggState.SubMachine.currentState = aggState.SubMachine.states.get(1);
 			}
-		}
-		return 0;
+		}	
+		
+		if (bIAmClosest)
+			weight += Wmax;
+		
+		/*END DISTANCE ORDER*/
+		
+		if (myGhost == GHOST.BLINKY)
+			System.out.println(weight);
+		
+		return weight;
 	}
 
 	@Override

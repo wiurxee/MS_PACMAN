@@ -12,6 +12,7 @@ import ghosts.machine.SubState_WrapAgg;
 import java.util.ArrayList;
 import java.util.EnumMap;
 
+import pacman.game.Constants.DM;
 import pacman.game.Constants.GHOST;
 import pacman.game.Constants.MOVE;
 import pacman.game.Game;
@@ -24,9 +25,13 @@ public class AJIGHOSTS  extends Controller<EnumMap<GHOST,MOVE>>{
 	public GhostMachine[] Ghosts = new GhostMachine[4];	
 	public boolean debug = false;
 	
+	public int distancePMToClosestSuperPill;
+	
+	public int veryCloseDistance = 20,
+			   farDistance = 70;
+	
 	public AJIGHOSTS(boolean debug)
 	{
-				
 //		ArrayList<StateMachine> subMachines = new ArrayList<StateMachine>();
 		singleton = this;
 		this.debug = debug;
@@ -83,6 +88,9 @@ public class AJIGHOSTS  extends Controller<EnumMap<GHOST,MOVE>>{
 	public EnumMap<GHOST,MOVE> getMove(Game game,long timeDue)
 	{
 		this.game = game;
+		
+		distancePMToClosestSuperPill = GetNearestSuperPillDistanceToPM();
+		
 		EnumMap<GHOST,MOVE> myMoves=new EnumMap<GHOST,MOVE>(GHOST.class);
 		for(GhostMachine ghost : Ghosts)	//for each ghost
 		{
@@ -91,7 +99,15 @@ public class AJIGHOSTS  extends Controller<EnumMap<GHOST,MOVE>>{
 				ghost.next();
 				myMoves.put(ghost.myGhost, ghost.action());
 			}
-		}
+		}		
 		return myMoves;		
+	}
+	
+	public int GetNearestSuperPillDistanceToPM ()
+	{
+		int[] targetsArray = game.getActivePowerPillsIndices();		//convert from ArrayList to array
+		int nearestPowerPillIndex = game.getClosestNodeIndexFromNodeIndex(game.getPacmanCurrentNodeIndex(),targetsArray,DM.PATH);
+		
+		return game.getShortestPathDistance(game.getPacmanCurrentNodeIndex(), nearestPowerPillIndex);
 	}
 }

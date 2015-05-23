@@ -8,7 +8,7 @@ import pacman.game.Constants.GHOST;
 import pacman.game.Constants.MOVE;
 
 public  class State_Aggressive extends State
-{
+{	
 	public State_Aggressive(GHOST g) {
 		super(g);
 		// TODO Auto-generated constructor stub
@@ -21,24 +21,27 @@ public  class State_Aggressive extends State
 	{
 		AJIGHOSTS controller = AJIGHOSTS.singleton;
 		
-						
-		if(controller.game.getGhostEdibleTime(myGhost) > 0)
+		float directAttackWeight = Math.max(0, Math.min(1, SubMachine.states.get(0).next()));
+		float wrapAttackWeight = Math.max(0, Math.min(1, SubMachine.states.get(1).next()));
+		float keepOfWeight = Math.max(0, Math.min(1, SubMachine.states.get(2).next()));
+		
+		if (directAttackWeight >= wrapAttackWeight &&  directAttackWeight > keepOfWeight)
 		{
-			GhostMachine myMachine = null;
-			
-			for(GhostMachine gMachine:controller.Ghosts)
-			{
-				if(gMachine.myGhost == myGhost)
-				{
-					myMachine = gMachine;
-					break;
-				}
-			}
-			
-			myMachine.currentState = myMachine.states.get(1);
-			return 0;
-		}		
-		SubMachine.next();
+			SubMachine.currentState = SubMachine.states.get(0);
+		}
+		else if (wrapAttackWeight > directAttackWeight && wrapAttackWeight >= keepOfWeight)
+		{
+			SubMachine.currentState = SubMachine.states.get(1);
+		}
+		else if ( keepOfWeight > directAttackWeight && keepOfWeight > wrapAttackWeight)
+		{
+			SubMachine.currentState = SubMachine.states.get(2);
+		}
+		else
+		{
+			SubMachine.currentState = SubMachine.states.get(0);
+		}
+		
 		return 0;
 	}
 	
